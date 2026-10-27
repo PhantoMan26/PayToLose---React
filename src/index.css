@@ -408,3 +408,738 @@ html {
     text-align: center;
     color: white;
 }
+
+
+
+
+/* =====================================================================
+   PAY TO LOSE – 90-es évek grunge téma
+   Színek, betűk és textúrák egy helyen: a :root változók átírásával az
+   egész oldal hangulata módosítható.
+   Ezt a fájlt az index.css UTÁN kell betölteni (a main.jsx így teszi).
+   ===================================================================== */
+
+:root {
+  /* Színek */
+  --bg: #221f1b;
+  --bg-deep: #17150f;
+  --surface: #1c1a16;
+  --surface-2: #2a2620;
+  --hover: #332e27;
+  --line: #433d33;
+  --paper: #d9cfb8;
+  --paper-dark: #bdb196;
+  --polaroid: #e4dbc6;
+  --ink: #1c1a17;
+  --text: #ece3cf;
+  --text-dim: #bdb39c;
+  --muted: #9a917e;
+  --accent: #c9962b;        /* mustár */
+  --accent-light: #e2b24a;
+  --accent-dark: #9c7118;
+  --burgundy: #7a2e2e;      /* bordó */
+  --burgundy-light: #b0544f;
+  --olive: #5b5a3a;         /* koszos olíva */
+  --olive-dark: #3f3e27;
+  --tape: rgba(216, 198, 142, 0.62);
+
+  /* Betűk */
+  --font-display: 'Anton', 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
+  --font-body: 'Courier Prime', 'Courier New', Courier, monospace;
+  --font-type: 'Special Elite', 'Courier Prime', 'Courier New', monospace;
+  --font-hand: 'Permanent Marker', 'Segoe Print', 'Comic Sans MS', cursive;
+
+  /* Szemcse (SVG zaj, külön képfájl nélkül) */
+  --noise-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --noise-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 .1 0 0 0 0 .08 0 0 0 0 .05 0 0 0 1.2 -.4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* Szakadt papírszél (fent és lent) */
+  --torn: polygon(
+    0 5px, 3% 1px, 7% 6px, 12% 2px, 17% 7px, 23% 1px, 29% 5px, 35% 0, 41% 6px, 47% 2px,
+    53% 7px, 59% 1px, 65% 5px, 71% 0, 77% 6px, 83% 2px, 89% 7px, 94% 1px, 100% 5px,
+    100% calc(100% - 4px), 95% 100%, 90% calc(100% - 6px), 84% calc(100% - 1px),
+    78% calc(100% - 5px), 72% 100%, 66% calc(100% - 6px), 60% calc(100% - 2px),
+    54% calc(100% - 7px), 48% 100%, 42% calc(100% - 5px), 36% calc(100% - 1px),
+    30% calc(100% - 6px), 24% 100%, 18% calc(100% - 4px), 12% calc(100% - 1px),
+    6% calc(100% - 6px), 0 calc(100% - 2px)
+  );
+}
+
+/* ===== Általános ===== */
+html { scroll-behavior: smooth; }
+* { font-family: var(--font-body); }
+
+body {
+  color: var(--text);
+  background: radial-gradient(ellipse at 50% 0%, #2f2a23 0%, transparent 65%), var(--bg);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+::selection { background: var(--accent); color: var(--ink); }
+
+.muted { color: var(--muted); }
+.center { text-align: center; }
+
+/* Filmszemcse + vignetta az egész oldalon */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+body::after {
+  content: '';
+  position: fixed; inset: -100px; z-index: 9999; pointer-events: none;
+  background-image: var(--noise-light);
+  opacity: 0.1;
+  animation: grain 0.9s steps(6) infinite;
+}
+@keyframes grain {
+  0%   { transform: translate(0, 0); }
+  17%  { transform: translate(-30px, 20px); }
+  34%  { transform: translate(25px, -35px); }
+  51%  { transform: translate(-15px, -20px); }
+  68%  { transform: translate(35px, 15px); }
+  85%  { transform: translate(-25px, 30px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ===== Fejléc ===== */
+.header {
+  background: linear-gradient(to bottom, rgba(23, 21, 15, 0.92), rgba(23, 21, 15, 0.5));
+  backdrop-filter: sepia(0.4) blur(2px);
+  border-bottom: 2px dashed rgba(236, 227, 207, 0.3);
+}
+.header-logo img { filter: sepia(0.35) hue-rotate(28deg) saturate(0.85) contrast(1.05); }
+
+.nav a {
+  position: relative;
+  color: var(--text);
+  font-family: var(--font-type);
+  font-weight: 400;
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.nav a::after {
+  content: '';
+  position: absolute; left: -4px; right: -4px; bottom: 0; height: 0.7em; z-index: -1;
+  background: var(--accent);
+  transform: scaleX(0) rotate(-1.5deg); transform-origin: left;
+  transition: transform 0.25s;
+}
+.nav a:hover { color: var(--ink); transform: rotate(-2deg); }
+.nav a:hover::after { transform: scaleX(1) rotate(-1.5deg); }
+
+/* ===== Hero videó ===== */
+.hero { position: relative; overflow: hidden; }
+.hero-video { filter: grayscale(0.7) sepia(0.35) contrast(1.2) brightness(0.78); }
+.hero::before {
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0 1px, transparent 1px 3px),
+    linear-gradient(to bottom, rgba(23, 21, 15, 0.5), transparent 25%, transparent 55%, var(--bg) 100%),
+    radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+}
+/* VHS "tracking" csík */
+.hero::after {
+  content: '';
+  position: absolute; left: 0; right: 0; top: -120px; height: 90px; z-index: 2; pointer-events: none;
+  background: linear-gradient(transparent, rgba(255, 255, 255, 0.07), transparent);
+  animation: vhs 7s linear infinite;
+}
+@keyframes vhs { to { transform: translateY(calc(100vh + 240px)); } }
+
+/* ===== Idézet: odaragasztott papírcsík ===== */
+.quote-section {
+  position: relative; isolation: isolate; z-index: 11;
+  max-width: 860px;
+  margin: -5rem auto 4rem;
+  padding: 3.2rem 3rem 2.8rem;
+  text-align: center;
+  color: var(--ink);
+  transform: rotate(-0.8deg);
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.65));
+}
+.quote-section::before {
+  content: '';
+  position: absolute; inset: 0; z-index: -1;
+  background-image: var(--noise-dark), linear-gradient(135deg, #e0d7c1, #cfc4a9);
+  clip-path: var(--torn);
+}
+.quote-section::after {
+  content: '';
+  position: absolute; top: -14px; left: 50%; width: 110px; height: 30px; margin-left: -55px;
+  background: var(--tape);
+  transform: rotate(2.5deg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.quote-text {
+  margin: 0;
+  font-family: var(--font-type);
+  font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+  line-height: 1.5; letter-spacing: 0; text-transform: none;
+}
+.quote-author {
+  display: inline-block; margin: 1.2rem 0 0;
+  font-family: var(--font-hand); font-size: 1.3rem; color: var(--burgundy);
+  transform: rotate(-2deg);
+}
+.quote-btn {
+  margin-top: 1.5rem; padding: 0.4rem 1.2rem; cursor: pointer;
+  background: transparent; color: var(--ink);
+  border: 2px dashed var(--ink); border-radius: 2px;
+  font-family: var(--font-type); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8rem;
+}
+.quote-btn:hover { background: var(--ink); color: var(--paper); }
+
+/* ===== Haverok: szemcsés, fekete-fehér csíkok ===== */
+.container { background: var(--bg-deep); color: var(--text); }
+.card-link { display: block; color: inherit; text-decoration: none; }
+.image { position: relative; border-right: 3px solid var(--bg-deep); }
+.image img {
+  display: block;
+  filter: grayscale(1) contrast(1.2) sepia(0.3) brightness(0.9);
+  transition: filter 0.5s;
+}
+.image:hover img { filter: grayscale(0.1) contrast(1.1) sepia(0.25); }
+/* nyomdai raszter */
+.image::after {
+  content: '';
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.45) 0 1px, transparent 1.4px) 0 0 / 4px 4px;
+  opacity: 0.55; mix-blend-mode: multiply;
+}
+.img-text {
+  z-index: 2;
+  background: linear-gradient(to top, rgba(23, 21, 15, 0.92), rgba(23, 21, 15, 0.4));
+}
+.img-text h3 { margin: 0 0 0.4rem; font-size: clamp(1.6rem, 3vw, 2.6rem); color: var(--text); text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.6); }
+.img-text p { margin: 0.15rem 0; opacity: 0.85; font-family: var(--font-type); }
+.img-text .img-nick {
+  font-family: var(--font-hand); font-size: 1.3rem; color: var(--accent-light);
+  opacity: 1; transform: rotate(-3deg);
+}
+.img-stat {
+  margin-top: 1rem; padding: 0.2rem 0.8rem;
+  font-family: var(--font-type); font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--burgundy-light); border: 3px double var(--burgundy-light);
+  background: rgba(0, 0, 0, 0.3); transform: rotate(-6deg);
+}
+.img-hint {
+  margin-top: 1.2rem; padding-bottom: 2px;
+  font-family: var(--font-type); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+  border-bottom: 2px dashed var(--accent);
+}
+
+/* ===== Szekciócímek: felragasztott címkék ===== */
+.videos-section h1,
+.gallery-section h1,
+.music-section h1 {
+  position: relative;
+  display: block; width: fit-content;
+  margin: 0 auto 1rem; padding: 0.35rem 1.6rem 0.25rem;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  color: var(--ink);
+  background-color: var(--paper); background-image: var(--noise-dark);
+  box-shadow: 4px 5px 0 rgba(0, 0, 0, 0.45);
+  transform: rotate(-1.6deg);
+  overflow: hidden;
+}
+.videos-section h1::before,
+.gallery-section h1::before,
+.music-section h1::before {
+  content: '';
+  position: absolute; top: -9px; left: -20px; width: 58px; height: 20px;
+  background: var(--tape); transform: rotate(-35deg);
+}
+.videos-section h1::after,
+.gallery-section h1::after,
+.music-section h1::after {
+  content: '';
+  position: absolute; bottom: -8px; right: -18px; width: 52px; height: 18px;
+  background: var(--tape); transform: rotate(-30deg);
+}
+
+/* ===== Videók: VHS-kazetták ===== */
+.card {
+  background: #191713; color: var(--text);
+  border: 1px solid var(--line); border-radius: 3px;
+  box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.45);
+}
+.card:nth-child(odd) { transform: rotate(-0.5deg); }
+.card:nth-child(even) { transform: rotate(0.6deg); }
+.card.skeleton { transform: none; background: #1d1a16; }
+.card:hover {
+  transform: translateY(-6px) rotate(0deg);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent), 8px 14px 0 rgba(0, 0, 0, 0.5);
+}
+.card img { filter: sepia(0.4) contrast(1.1) saturate(0.75) brightness(0.9); }
+.card:hover img { filter: sepia(0.1) contrast(1.05) saturate(1); }
+.card h3 {
+  margin: 0.5rem; padding: 0.45rem 0.7rem;
+  font-family: var(--font-type); font-size: 0.82rem; line-height: 1.35;
+  letter-spacing: 0; text-transform: none;
+  color: var(--ink); background-color: var(--paper); background-image: var(--noise-dark);
+  transform: rotate(-0.4deg);
+}
+.loading-dots span { background-color: var(--accent); }
+.error { color: var(--burgundy-light); }
+
+/* ===== Galéria: polaroidok ===== */
+.gallery-section { padding: 4rem 1.25rem 2rem; color: var(--text); }
+.gallery-inner { max-width: 1200px; margin: 0 auto; }
+.gallery-filter { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.7rem; margin-top: 1.8rem; }
+.gallery-grid { columns: 4 240px; column-gap: 1.6rem; margin-top: 2rem; }
+
+.gallery-item {
+  --r: 0deg;
+  position: relative; display: block; width: 100%;
+  margin: 0 0 1.8rem; padding: 10px 10px 42px; border: 0;
+  background-color: var(--polaroid); background-image: var(--noise-dark);
+  border-radius: 2px; cursor: zoom-in; break-inside: avoid;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.55);
+  transform: rotate(var(--r));
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.gallery-item:nth-child(5n + 1) { --r: -2.2deg; }
+.gallery-item:nth-child(5n + 2) { --r: 1.6deg; }
+.gallery-item:nth-child(5n + 3) { --r: -0.8deg; }
+.gallery-item:nth-child(5n + 4) { --r: 2.3deg; }
+.gallery-item:nth-child(5n + 5) { --r: -1.5deg; }
+.gallery-item::before {
+  content: '';
+  position: absolute; top: -13px; left: 50%; width: 84px; height: 26px; margin-left: -42px;
+  background: var(--tape); transform: rotate(-3deg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.gallery-item img {
+  display: block; width: 100%;
+  filter: sepia(0.4) contrast(1.08) saturate(0.8);
+  transition: filter 0.3s;
+}
+.gallery-item:hover {
+  --r: 0deg;
+  z-index: 3; transform: rotate(0deg) scale(1.04);
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.75);
+}
+.gallery-item:hover img { filter: sepia(0.1) contrast(1.05) saturate(1); }
+.gallery-tag {
+  position: absolute; left: 10px; right: 10px; bottom: 9px;
+  text-align: center; pointer-events: none;
+  font-family: var(--font-hand); font-size: 1rem; color: var(--ink);
+  transform: rotate(-1deg);
+}
+
+/* Lightbox */
+.lb {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(14, 12, 9, 0.94);
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+}
+.lb img {
+  max-width: 80vw; max-height: 88vh;
+  border: 10px solid var(--polaroid); border-bottom-width: 34px; border-radius: 2px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  filter: sepia(0.2);
+}
+.lb button { background: none; border: none; color: var(--text); font-size: 3rem; cursor: pointer; padding: 0 0.5rem; }
+.lb button:hover { color: var(--accent); }
+.lb .lb-close { position: absolute; top: 0.75rem; right: 1.25rem; font-size: 2.4rem; line-height: 1; }
+.lb .lb-cap {
+  position: absolute; bottom: 1.2rem; left: 0; right: 0; text-align: center; pointer-events: none;
+  font-family: var(--font-hand); color: var(--text-dim); font-size: 1rem;
+}
+
+/* ===== Szalagcímkék (szűrőgombok, dalszöveg-gomb) ===== */
+.chip {
+  padding: 0.3rem 0.9rem; border: 0; border-radius: 2px; cursor: pointer;
+  font-family: var(--font-type); font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink); background-color: var(--paper); background-image: var(--noise-dark);
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.45);
+  transform: rotate(-1deg);
+  transition: transform 0.2s, background-color 0.2s;
+}
+.chip:nth-child(even) { transform: rotate(1.2deg); }
+.chip:hover { transform: rotate(0deg) translateY(-2px); }
+.chip.active { background-color: var(--accent); }
+
+/* ===== Zene szekció ===== */
+.music-section { padding: 4rem 0 6rem; color: var(--text); }
+.music-wrap { max-width: 1000px; margin: 2rem auto 0; padding-inline: 1.25rem;}
+
+/* Albumsáv */
+.album-strip {
+  display: flex; gap: 1.2rem; overflow-x: auto;
+  padding: 0.8rem 0.5rem 1.2rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin; scrollbar-color: var(--accent) var(--surface);
+}
+.album-chip {
+  flex: 0 0 auto; width: 120px; padding: 0;
+  background: none; border: 0; color: var(--text-dim); text-align: left;
+  cursor: pointer; scroll-snap-align: start;
+  transition: transform 0.25s, color 0.25s;
+}
+.album-chip:nth-child(odd) { --r: -2deg; }
+.album-chip:nth-child(even) { --r: 1.5deg; }
+.album-chip:hover, .album-chip.active { color: var(--text); }
+.album-chip:hover { transform: translateY(-4px); }
+.album-chip .thumb {
+  display: block; width: 120px; height: 120px;
+  border: 4px solid var(--polaroid); border-bottom-width: 14px; border-radius: 2px;
+  object-fit: cover; transform: rotate(var(--r, 0deg));
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.55);
+  filter: sepia(0.3) contrast(1.05);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.album-chip:hover .thumb { transform: rotate(0deg); }
+.album-chip.active .thumb { box-shadow: 0 0 0 3px var(--accent), 0 8px 16px rgba(0, 0, 0, 0.55); }
+.album-chip > span { display: block; margin-top: 0.6rem; font-size: 0.85rem; line-height: 1.3; white-space: normal; font-family: var(--font-type); }
+.album-chip small { color: var(--muted); }
+
+.cover-ph {
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 30% 20%, #4a2a22, #1c1a16 70%);
+  color: var(--accent-light); font-size: 1.4rem;
+}
+
+/* Albumnézet */
+.album-view {
+  display: grid; grid-template-columns: minmax(240px, 400px) 1fr;
+  gap: 2rem 2.5rem; align-items: start;
+  margin: 1rem 0 2.5rem;
+}
+.album-art { position: relative; width: 100%; max-width: 400px; aspect-ratio: 1.316 / 1; overflow: visible; }
+.sleeve { position: absolute; left: 0; top: 0; width: 76%; aspect-ratio: 1; overflow: visible; }
+.album-cover {
+  position: relative; z-index: 2; display: block;
+  width: 100%; height: 100%; object-fit: cover; border-radius: 2px;
+  box-shadow: 8px 12px 0 rgba(0, 0, 0, 0.5);
+  filter: sepia(0.25) contrast(1.05);
+}
+.album-cover.cover-ph { font-size: 4rem; }
+.vinyl-slide {
+  position: absolute; inset: 4%; z-index: 1;
+  transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.album-art.out .vinyl-slide { transform: translateX(36%); }
+.vinyl {
+  width: 100%; height: 100%; border-radius: 50%;
+  background:
+    radial-gradient(circle at center, var(--burgundy-light) 0 11%, #1a0d0d 11.5% 13%, transparent 13.5%),
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.1), transparent 40%),
+    repeating-radial-gradient(circle at center, #141414 0 2px, #0a0a0a 3px 4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  animation: spin 5s linear infinite;
+  animation-play-state: paused;
+}
+.album-art.spinning .vinyl { animation-play-state: running; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.album-kicker {
+  display: inline-block; margin: 0;
+  font-family: var(--font-hand); font-size: 1.3rem; color: var(--accent-light);
+  transform: rotate(-2deg);
+}
+.album-title { margin: 0.1rem 0 0.3rem; font-size: clamp(1.8rem, 4.5vw, 2.8rem); line-height: 1.05; text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.6); overflow: hidden; }
+.album-sub { margin: 0 0 1rem; color: var(--muted); font-family: var(--font-type); }
+.album-play {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.6rem 1.3rem 0.6rem 1rem; cursor: pointer;
+  background: var(--accent); color: var(--ink);
+  border: 2px solid #11100c; border-radius: 4px;
+  box-shadow: 0 4px 0 #11100c;
+  font-family: var(--font-type); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em;
+  transition: transform 0.08s, box-shadow 0.08s, filter 0.2s;
+}
+.album-play:hover { filter: brightness(1.1); }
+.album-play:active { transform: translateY(3px); box-shadow: 0 1px 0 #11100c; }
+.album-play svg { width: 20px; height: 20px; }
+
+/* Számlista */
+.track-list { list-style: none; margin: 1.2rem 0 0; padding: 0; }
+.track-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.75rem 1rem; border-bottom: 1px dashed var(--line);
+  cursor: pointer; transition: background 0.2s;
+}
+.track-item:hover { background: var(--hover); }
+.track-item.active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+.track-num { width: 1.6rem; text-align: right; color: var(--muted); flex-shrink: 0; font-family: var(--font-type); }
+.track-name { flex: 1; font-family: var(--font-type); }
+.track-artist { color: var(--muted); font-size: 0.9rem; }
+.track-lyr { font-size: 0.7rem; color: var(--muted); border: 1px solid var(--line); border-radius: 3px; padding: 0 0.3rem; }
+
+.eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; }
+.eq span {
+  display: block; width: 3px; height: 100%;
+  background: var(--accent); transform-origin: bottom;
+  animation: eq 0.9s infinite ease-in-out;
+}
+.eq span:nth-child(2) { animation-delay: 0.2s; }
+.eq span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+
+/* Lejátszó: kazetta + deck */
+.player {
+  padding: 1.5rem 1.5rem 1.1rem;
+  background-image: linear-gradient(rgba(42, 38, 32, 0.9), rgba(42, 38, 32, 0.9)), var(--noise-light);
+  background-color: var(--surface-2);
+  border: 2px solid #11100c; border-radius: 10px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.04), 8px 12px 0 rgba(0, 0, 0, 0.5);
+}
+
+.cassette {
+  position: relative; max-width: 520px; margin: 0 auto 1.4rem;
+  padding: 14px 14px 12px; border-radius: 14px;
+  background: linear-gradient(160deg, #6a693f, #4a4930);
+  border: 2px solid #15140d;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -3px 0 rgba(0, 0, 0, 0.35), 0 8px 18px rgba(0, 0, 0, 0.6);
+}
+.cassette::before, .cassette::after {
+  content: '';
+  position: absolute; top: 6px; width: 7px; height: 7px; border-radius: 50%;
+  background: #1c1b12; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.cassette::before { left: 8px; }
+.cassette::after { right: 8px; }
+
+.cassette-label {
+  padding: 0.5rem 0.9rem 0.8rem;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    repeating-linear-gradient(transparent 0 27px, rgba(28, 26, 23, 0.16) 27px 28px),
+    var(--noise-dark);
+  border-top: 10px solid var(--burgundy); border-radius: 5px;
+  transform: rotate(-0.4deg);
+}
+.cl-top {
+  display: flex; justify-content: space-between;
+  font-family: var(--font-type); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--burgundy);
+}
+.cl-title {
+  margin-top: 0.15rem;
+  font-family: var(--font-hand); font-size: clamp(1.3rem, 3.2vw, 1.9rem); line-height: 1.15;
+  overflow-wrap: anywhere; transform: rotate(-1deg);
+  overflow: hidden;
+}
+.cl-artist { margin-top: 0.15rem; font-family: var(--font-type); font-size: 0.9rem; color: #4a443a; }
+
+.cassette-window {
+  position: relative;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 78%; height: 66px; margin: 0.8rem auto 0; padding: 0 12px;
+  background: #0f0e0a; border: 3px solid #1f1e15; border-radius: 34px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.05), inset 0 6px 10px rgba(0, 0, 0, 0.7);
+}
+.reel { display: grid; place-items: center; width: 48px; height: 48px; }
+.roll { display: grid; place-items: center; border-radius: 50%; background: #3a2a1b; }
+/* A szalagtekercs mérete a lejátszás haladását követi (--p: 0..1) */
+.reel.left .roll { width: calc(26px + (1 - var(--p, 0)) * 22px); height: calc(26px + (1 - var(--p, 0)) * 22px); }
+.reel.right .roll { width: calc(26px + var(--p, 0) * 22px); height: calc(26px + var(--p, 0) * 22px); }
+.hub {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--paper);
+  background:
+    radial-gradient(circle, #0f0e0a 0 3px, transparent 3.5px),
+    repeating-conic-gradient(var(--paper) 0 20deg, #0f0e0a 20deg 60deg);
+  animation: spin 2.2s linear infinite;
+  animation-play-state: paused;
+}
+.cassette.running .hub { animation-play-state: running; }
+.tape-line {
+  position: absolute; left: 40px; right: 40px; bottom: 9px; height: 2px;
+  background: #3a2a1b;
+}
+
+.seek-row {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin-top: 0.4rem; font-size: 0.85rem; color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.seek, .volume input { accent-color: var(--accent); cursor: pointer; }
+.seek { flex: 1; }
+
+.player-controls {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 1rem; margin: 1rem 0 0.8rem;
+}
+.ctrl {
+  display: grid; place-items: center;
+  width: 48px; height: 44px; border-radius: 6px; cursor: pointer;
+  color: var(--ink);
+  background: linear-gradient(#d3cbb6, #a59d87);
+  border: 2px solid #11100c;
+  box-shadow: 0 4px 0 #11100c, inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: transform 0.08s, box-shadow 0.08s, filter 0.2s;
+}
+.ctrl:hover { filter: brightness(1.08); }
+.ctrl:active { transform: translateY(3px); box-shadow: 0 1px 0 #11100c, inset 0 1px 0 rgba(255, 255, 255, 0.5); }
+.ctrl.play { width: 64px; height: 50px; background: linear-gradient(var(--accent-light), var(--accent-dark)); }
+.volume { display: flex; align-items: center; gap: 0.5rem; margin-left: 1rem; font-size: 0.85rem; color: var(--text-dim); font-family: var(--font-type); }
+.volume input { width: 100px; }
+
+/* Dalszöveg: a kazetta borítóbetétje */
+.lyrics-bar {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem;
+  margin-top: 0.8rem; padding-top: 0.9rem; border-top: 1px dashed var(--line);
+  overflow: hidden;
+}
+.lyrics-none, .lyrics-hint { font-size: 0.85rem; }
+
+.lyrics {
+  position: relative;
+  max-height: 320px; overflow-y: auto;
+  margin-top: 0.9rem; padding: 1rem 1.2rem;
+  text-align: center;
+  color: var(--ink); font-family: var(--font-type);
+  background-color: var(--paper); background-image: var(--noise-dark);
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2), 3px 4px 0 rgba(0, 0, 0, 0.4);
+  scrollbar-width: thin; scrollbar-color: var(--burgundy) var(--paper-dark);
+}
+.lyrics.synced { padding-block: 120px; }
+.lyric-line {
+  width: fit-content; margin: 0 auto 0.6rem;
+  line-height: 1.5; font-family: var(--font-type);
+  color: rgba(28, 26, 23, 0.9);
+  transition: color 0.3s;
+}
+.lyrics.synced .lyric-line { color: rgba(28, 26, 23, 0.5); font-size: 1.05rem; }
+.lyrics.synced .lyric-line.past { color: rgba(28, 26, 23, 0.65); }
+.lyrics.synced .lyric-line.active {
+  color: var(--ink); font-size: 1.2rem;
+  background: linear-gradient(transparent 55%, color-mix(in srgb, var(--accent) 75%, transparent) 55%);
+}
+.lyric-line.clickable { cursor: pointer; }
+.lyric-line.clickable:hover { color: var(--burgundy); }
+
+/* ===== Profiloldal ===== */
+.profile { min-height: 100vh; color: var(--text); padding: calc(10vh + 2rem) 1.25rem 4rem; }
+.profile-inner { max-width: 1100px; margin: 0 auto; }
+
+.back-link {
+  display: inline-block; margin-bottom: 1.5rem;
+  color: var(--text-dim); text-decoration: none;
+  font-family: var(--font-type); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.9rem;
+  transition: color 0.2s, transform 0.2s;
+}
+.back-link:hover { color: var(--accent); transform: translateX(-3px); }
+
+.profile-top {
+  display: grid; grid-template-columns: minmax(240px, 380px) 1fr;
+  gap: 2.5rem; align-items: start;
+  overflow: hidden;
+}
+.profile-photo {
+  width: 100%; aspect-ratio: 3 / 4;
+  object-fit: cover; object-position: top center;
+  border: 12px solid var(--polaroid); border-bottom-width: 52px; border-radius: 2px;
+  box-shadow: 10px 14px 0 rgba(0, 0, 0, 0.5);
+  transform: rotate(-2deg);
+  filter: sepia(0.25) contrast(1.05);
+}
+.profile-nick {
+  display: inline-block; margin: 0 0 0.25rem;
+  font-family: var(--font-hand); font-size: 1.5rem; color: var(--accent-light);
+  transform: rotate(-2deg);
+}
+.profile-name { margin: 0; font-size: clamp(2.4rem, 7vw, 4.6rem); line-height: 1.02; text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6); overflow: hidden;}
+
+.stat-row { display: flex; flex-wrap: wrap; gap: 0.9rem; margin: 1.6rem 0; overflow: hidden;}
+.stat-pill {
+  display: flex; flex-direction: column; gap: 0.15rem;
+  padding: 0.7rem 1.1rem;
+  color: var(--ink);
+  background-color: var(--paper); background-image: var(--noise-dark);
+  box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.45);
+  transform: rotate(-1.5deg);
+}
+.stat-pill:nth-child(even) { transform: rotate(1.2deg); }
+.stat-pill span { font-family: var(--font-type); font-size: 0.72rem; color: var(--burgundy); text-transform: uppercase; letter-spacing: 0.1em; }
+.stat-pill strong { font-family: var(--font-hand); font-size: 1.25rem; font-weight: 400; }
+
+.profile-bio { max-width: 60ch; line-height: 1.7; color: var(--text-dim);}
+.profile-links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
+.profile-links a {
+  padding: 0.4rem 1rem; color: var(--text); text-decoration: none; text-transform: uppercase;
+  font-family: var(--font-type); font-size: 0.85rem; letter-spacing: 0.08em;
+  border: 2px dashed var(--accent); transition: background 0.25s, color 0.25s;
+}
+.profile-links a:hover { background: var(--accent); color: var(--ink); }
+
+.profile-section { margin-top: 3.5rem; }
+.profile-section h2 { margin: 0 0 1rem; padding-bottom: 0.5rem; color: var(--accent-light); border-bottom: 2px dashed var(--line); }
+.profile-quote {
+  margin: 0 0 1rem; padding: 0.6rem 0 0.6rem 1.2rem;
+  border-left: 4px solid var(--accent);
+  font-family: var(--font-type); font-size: 1.2rem; color: var(--text);
+  background: color-mix(in srgb, var(--paper) 6%, transparent);
+}
+
+.profile-tracks { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+.profile-tracks li {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 0.75rem; padding: 0.8rem 1rem;
+  font-family: var(--font-type);
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 3px;
+}
+.profile-tracks audio { color-scheme: dark; max-width: 100%; }
+
+.profile-gallery { columns: 3 220px; column-gap: 1.4rem; }
+.profile-gallery img {
+  width: 100%; margin-bottom: 1.4rem; cursor: zoom-in;
+  border: 8px solid var(--polaroid); border-bottom-width: 28px; border-radius: 2px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.55);
+  filter: sepia(0.35) contrast(1.05);
+  transform: rotate(-1.5deg);
+  transition: transform 0.3s, filter 0.3s;
+}
+.profile-gallery img:nth-child(even) { transform: rotate(1.8deg); }
+.profile-gallery img:hover { transform: rotate(0deg) scale(1.03); filter: sepia(0.1); }
+
+.profile-nav {
+  display: flex; justify-content: space-between; gap: 1rem;
+  margin-top: 4rem; padding-top: 1.5rem; border-top: 2px dashed var(--line);
+}
+.profile-nav a { color: var(--text); text-decoration: none; font-family: var(--font-type); text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.2s; }
+.profile-nav a:hover { color: var(--accent); }
+
+.notfound { text-align: center; padding-top: 10vh; }
+.notfound h1 { margin: 0; font-size: 6rem; color: var(--accent); }
+
+/* ===== Mobil ===== */
+@media (max-width: 810px) {
+  .profile { padding-top: 12rem; }
+  .profile-top { grid-template-columns: 1fr; gap: 1.5rem; }
+  .profile-photo { max-width: 380px; }
+  .album-view { grid-template-columns: 1fr; }
+  .album-art { margin-inline: auto; max-width: 360px; }
+  .volume { margin-left: 0; }
+  .track-artist { display: none; }
+  .quote-section { margin-inline: 0.75rem; padding-inline: 1.5rem; }
+}
+@media (max-width: 600px) {
+  .gallery-grid { columns: 2 140px; column-gap: 1rem; }
+  .gallery-item { padding: 6px 6px 32px; margin-bottom: 1.2rem; }
+  .cassette-window { width: 92%; }
+}
+
+/* ===== Kevesebb mozgás kérése esetén ===== */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  body::after, .hero::after, .vinyl, .hub, .eq span { animation: none !important; }
+}

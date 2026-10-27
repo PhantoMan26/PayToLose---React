@@ -20,6 +20,7 @@ html, body{
   color: var(--ink);
   font-family: 'Courier Prime', 'Special Elite', monospace;
 }
+body *{ font-family: 'Courier Prime', 'Special Elite', 'Courier New', monospace; }
 
 /* Szemcsés textúra az egész oldalon – inline SVG zaj, külön képfájl nélkül */
 body::before{
