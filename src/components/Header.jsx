@@ -13,9 +13,10 @@ export default function Header() {
         <nav className="nav">
           <ul>
             <li><Link to="/">Home</Link></li>
-            <li><Link to="#members">Members</Link></li>
-            <li><Link to="#videos">Videos</Link></li>
-            <li><Link to="#music">Music</Link></li>
+            <li><Link to="/#members">Members</Link></li>
+            <li><Link to="/#videos">Videos</Link></li>
+            <li><Link to="/#gallery">Gallery</Link></li>
+            <li><Link to="/#music">Music</Link></li>
           </ul>
         </nav>
       </header>

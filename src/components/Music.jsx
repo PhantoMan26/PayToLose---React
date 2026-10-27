@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { tracks } from '../data/tracks.js'
+import { albums } from '../data/tracks.js'
 
 const fmt = (s) => {
   if (!isFinite(s)) return '0:00'
@@ -18,20 +18,33 @@ const PAUSE = 'M6 5h4v14H6zM14 5h4v14h-4z'
 const PREV = 'M6 6h2v12H6zM9.5 12l8.5 6V6z'
 const NEXT = 'M16 6h2v12h-2zM6 18l8.5-6L6 6z'
 
+// Album borító; ha nincs kép, egy színes helyettesítő jelenik meg
+function Cover({ album, className }) {
+  return album.cover ? (
+    <img className={className} src={album.cover} alt={`${album.title} borítója`} loading="lazy" />
+  ) : (
+    <div className={`${className} cover-ph`} aria-hidden="true">♪</div>
+  )
+}
+
 export default function Music() {
   const audioRef = useRef(null)
   const wantPlay = useRef(false)
-  const [current, setCurrent] = useState(0)
+  const lyricsRef = useRef(null)
+
+  const [viewId, setViewId] = useState(albums[0]?.id)
+  const [playAlbumId, setPlayAlbumId] = useState(albums[0]?.id)
+  const [playIndex, setPlayIndex] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [time, setTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(0.8)
-  const [filter, setFilter] = useState('')
   const [showLyrics, setShowLyrics] = useState(true)
-  const lyricsRef = useRef(null)
 
-  const artists = [...new Set(tracks.map((t) => t.artist))]
-  const track = tracks[current]
+  const viewAlbum = albums.find((a) => a.id === viewId) || albums[0]
+  const playAlbum = albums.find((a) => a.id === playAlbumId) || albums[0]
+  const queue = playAlbum?.tracks || []
+  const track = queue[playIndex]
   const lyrics = track?.lyrics || null
 
   // Időzített dalszövegnél az éppen aktív sor indexe
@@ -43,10 +56,23 @@ export default function Music() {
     }
   }
 
+  // Új szám betöltése
+  useEffect(() => {
+    const a = audioRef.current
+    if (!a || !track) return
+    a.load()
+    setTime(0)
+    if (wantPlay.current) a.play().catch(() => setPlaying(false))
+  }, [track?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume
+  }, [volume])
+
   // Szám váltásakor a dalszöveg az elejére ugrik
   useEffect(() => {
     if (lyricsRef.current) lyricsRef.current.scrollTop = 0
-  }, [current])
+  }, [track?.id])
 
   // Az aktív sor középre görget (csak a dalszöveg-dobozon belül, az oldalt nem mozgatja)
   useEffect(() => {
@@ -58,26 +84,15 @@ export default function Music() {
       top: el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2,
       behavior: 'smooth',
     })
-  }, [activeLine, current, showLyrics])
+  }, [activeLine, track?.id, showLyrics])
 
-  useEffect(() => {
-    const a = audioRef.current
-    if (!a || !track) return
-    a.load()
-    setTime(0)
-    if (wantPlay.current) a.play().catch(() => setPlaying(false))
-  }, [current]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume
-  }, [volume])
-
-  if (tracks.length === 0) {
+  if (!albums.length) {
     return (
       <section id="music" className="music-section">
         <h1>Pay To Lose Zenék</h1>
         <p className="muted center">
-          Még nincs zene. Tegyetek „Előadó - Szám címe.mp3” nevű fájlokat az src/assets/music mappába.
+          Még nincs zene. Tegyetek egy albummappát („Album neve”) az src/assets/music mappába, benne
+          „Előadó - Szám címe.mp3” nevű fájlokkal és egy cover.jpg borítóval.
         </p>
       </section>
     )
@@ -91,38 +106,128 @@ export default function Music() {
     else a.pause()
   }
 
-  const go = (i) => {
+  const go = (albumId, index) => {
     wantPlay.current = true
-    if (i === current) {
+    if (albumId === playAlbumId && index === playIndex) {
       const a = audioRef.current
       a.currentTime = 0
       a.play().catch(() => {})
     } else {
-      setCurrent(i)
+      setPlayAlbumId(albumId)
+      setPlayIndex(index)
     }
   }
 
-  const next = () => go((current + 1) % tracks.length)
+  const next = () => go(playAlbumId, (playIndex + 1) % queue.length)
   const prev = () => {
     const a = audioRef.current
     if (a && a.currentTime > 3) a.currentTime = 0
-    else go((current - 1 + tracks.length) % tracks.length)
+    else go(playAlbumId, (playIndex - 1 + queue.length) % queue.length)
   }
 
-  const clickRow = (i) => (i === current ? toggle() : go(i))
+  const viewIsPlaying = viewAlbum.id === playAlbumId
+  const clickRow = (i) => (viewIsPlaying && i === playIndex ? toggle() : go(viewAlbum.id, i))
+
+  const albumButtonLabel = viewIsPlaying
+    ? playing
+      ? 'Szünet'
+      : time > 0
+        ? 'Folytatás'
+        : 'Album lejátszása'
+    : 'Album lejátszása'
+
+  const started = playing || time > 0
+  const sleeveClass =
+    'album-art' + (viewIsPlaying && started ? ' out' : '') + (viewIsPlaying && playing ? ' spinning' : '')
 
   return (
     <section id="music" className="music-section">
       <h1>Pay To Lose Zenék</h1>
 
       <div className="music-wrap">
+        {albums.length > 1 && (
+          <div className="album-strip" role="tablist" aria-label="Albumok">
+            {albums.map((al) => (
+              <button
+                key={al.id}
+                role="tab"
+                aria-selected={al.id === viewAlbum.id}
+                className={al.id === viewAlbum.id ? 'album-chip active' : 'album-chip'}
+                onClick={() => setViewId(al.id)}
+              >
+                <Cover album={al} className="thumb" />
+                <span>
+                  {al.title}
+                  <small> · {al.tracks.length} szám</small>
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="album-view">
+          <div className={sleeveClass}>
+            <div className="sleeve">
+              <div className="vinyl-slide">
+                <div className="vinyl" />
+              </div>
+              <Cover album={viewAlbum} className="album-cover" />
+            </div>
+          </div>
+
+          <div className="album-meta">
+            <p className="album-kicker">Album</p>
+            <h2 className="album-title">{viewAlbum.title}</h2>
+            <p className="album-sub">
+              {viewAlbum.artists.join(', ')} · {viewAlbum.tracks.length} szám
+            </p>
+            <button
+              className="album-play"
+              onClick={viewIsPlaying ? toggle : () => go(viewAlbum.id, 0)}
+            >
+              <Icon d={viewIsPlaying && playing ? PAUSE : PLAY} />
+              {albumButtonLabel}
+            </button>
+
+            <ol className="track-list">
+              {viewAlbum.tracks.map((t, i) => {
+                const active = viewIsPlaying && i === playIndex
+                return (
+                  <li
+                    key={t.id}
+                    className={active ? 'track-item active' : 'track-item'}
+                    onClick={() => clickRow(i)}
+                  >
+                    <span className="track-num">
+                      {active && playing ? (
+                        <span className="eq" aria-hidden="true"><span /><span /><span /></span>
+                      ) : (
+                        i + 1
+                      )}
+                    </span>
+                    <span className="track-name">{t.title}</span>
+                    {viewAlbum.artists.length > 1 && <span className="track-artist">{t.artist}</span>}
+                    {t.lyrics && <span className="track-lyr" title="Van dalszöveg">Aa</span>}
+                  </li>
+                )
+              })}
+            </ol>
+          </div>
+        </div>
+
         <div className="player">
           <div className="player-now">
-            <div>
-              <div className="player-title">{track.title}</div>
-              <div className="player-artist">{track.artist}</div>
+            <div className="np">
+              <Cover album={playAlbum} className="np-cover" />
+              <div>
+                <div className="player-title">{track.title}</div>
+                <div className="player-artist">
+                  {track.artist}
+                  <span className="muted"> · {playAlbum.title}</span>
+                </div>
+              </div>
             </div>
-            <span className="muted">{current + 1} / {tracks.length}</span>
+            <span className="muted">{playIndex + 1} / {queue.length}</span>
           </div>
 
           <div className="seek-row">
@@ -222,45 +327,6 @@ export default function Music() {
             onEnded={next}
           />
         </div>
-
-        {artists.length > 1 && (
-          <div className="track-filter">
-            <button className={!filter ? 'chip active' : 'chip'} onClick={() => setFilter('')}>
-              Mind
-            </button>
-            {artists.map((a) => (
-              <button
-                key={a}
-                className={filter === a ? 'chip active' : 'chip'}
-                onClick={() => setFilter(filter === a ? '' : a)}
-              >
-                {a}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <ul className="track-list">
-          {tracks.map((t, i) =>
-            filter && t.artist !== filter ? null : (
-              <li
-                key={t.id}
-                className={i === current ? 'track-item active' : 'track-item'}
-                onClick={() => clickRow(i)}
-              >
-                <span className="track-num">
-                  {i === current && playing ? (
-                    <span className="eq" aria-hidden="true"><span /><span /><span /></span>
-                  ) : (
-                    i + 1
-                  )}
-                </span>
-                <span className="track-name">{t.title}</span>
-                <span className="track-artist">{t.artist}</span>
-              </li>
-            )
-          )}
-        </ul>
       </div>
     </section>
   )

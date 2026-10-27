@@ -2,6 +2,7 @@ import HeaderVideo from '../components/HeaderVideo.jsx'
 import Quote from '../components/Quote.jsx'
 import Cards from '../components/Cards.jsx'
 import Videos from '../components/Videos.jsx'
+import Gallery from '../components/Gallery.jsx'
 import Music from '../components/Music.jsx'
 import { members } from '../data/members.js'
 
@@ -20,6 +21,7 @@ export default function Home() {
       <div id="videos">
         <Videos />
       </div>
+      <Gallery />
       <Music />
     </>
   )
