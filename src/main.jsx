@@ -1,6 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+
+// A betűtípusok az extra.css elején töltődnek be (Google Fonts), külön telepítés nem kell.
 import './index.css'
 import './extra.css'
 import App from './App.jsx'

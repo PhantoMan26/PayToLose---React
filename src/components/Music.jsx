@@ -136,7 +136,6 @@ export default function Music() {
         : 'Album lejátszása'
     : 'Album lejátszása'
 
-  const progress = duration ? Math.min(1, time / duration) : 0
   const started = playing || time > 0
   const sleeveClass =
     'album-art' + (viewIsPlaying && started ? ' out' : '') + (viewIsPlaying && playing ? ' spinning' : '')
@@ -217,23 +216,14 @@ export default function Music() {
         </div>
 
         <div className="player">
-          <div className={playing ? 'cassette running' : 'cassette'} style={{ '--p': progress }}>
-            <div className="cassette-label">
-              <div className="cl-top">
-                <span>Side A</span>
-                <span>{playIndex + 1} / {queue.length}</span>
-              </div>
-              <div className="cl-title">{track.title}</div>
-              <div className="cl-artist">
-                {track.artist}
-                <span> · {playAlbum.title}</span>
-              </div>
+          <div className="np-slip">
+            <Cover album={playAlbum} className="np-cover" />
+            <div className="np-text">
+              <span className="np-label">{playing ? 'Most szól' : 'Szünet'}</span>
+              <div className="np-title">{track.title}</div>
+              <div className="np-artist">{track.artist} · {playAlbum.title}</div>
             </div>
-            <div className="cassette-window" aria-hidden="true">
-              <div className="reel left"><div className="roll"><div className="hub" /></div></div>
-              <div className="tape-line" />
-              <div className="reel right"><div className="roll"><div className="hub" /></div></div>
-            </div>
+            <span className="np-count">{playIndex + 1} / {queue.length}</span>
           </div>
 
           <div className="seek-row">
