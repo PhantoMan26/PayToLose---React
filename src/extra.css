@@ -1068,8 +1068,6 @@ html { scroll-behavior: smooth; }
    Ezt a fájlt az index.css UTÁN kell betölteni (a main.jsx így teszi).
    ===================================================================== */
 
-/* Betűtípusok (Google Fonts). Ennek a fájl legelső szabályának kell lennie. */
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Roboto+Mono:wght@400;500&family=Rubik+Spray+Paint&family=Anton&family=Permanent+Marker&display=swap');
 
 :root {
   /* Színek */
